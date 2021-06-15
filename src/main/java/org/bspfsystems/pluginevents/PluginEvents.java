@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 public final class PluginEvents {
     
     private static final PluginEvents INSTANCE = new PluginEvents();
+    private static final Logger DEFAULT_LOGGER = Logger.getLogger(PluginEvents.class.getSimpleName());
     
     private final ConcurrentHashMap<Event, TreeMap<Integer, HashSet<Method>>> registeredEvents;
     private final ConcurrentHashMap<Method, Boolean> ignoreCancelled;
@@ -115,62 +116,56 @@ public final class PluginEvents {
      * registered to listen for the {@link Event}.
      * 
      * @param event The {@link Event} that is called.
+     * @return <code>true</code> if the {@link Event} has been cancelled by the
+     *         end of the handling, <code>false</code> otherwise.
      */
-    public void callEvent(@NotNull final Event event) {
+    public boolean callEvent(@NotNull final Event event) {
         
         final TreeMap<Integer, HashSet<Method>> byPriority = this.registeredEvents.get(event);
         if (byPriority == null) {
-            return;
+            PluginEvents.DEFAULT_LOGGER.log(Level.WARNING, "Event called but not registered.");
+            PluginEvents.DEFAULT_LOGGER.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
+            return false;
         }
-    
-        for (final Map.Entry<Integer, HashSet<Method>> entry : byPriority.entrySet()) {
-            this.handleEvent(event, entry.getValue(), entry.getKey() >= EventPriority.MONITOR.ordinal());
-        }
-    }
-    
-    /**
-     * Handles the {@link Event} with the specified {@link EventHandler}
-     * methods.
-     * 
-     * @param event The {@link Event} to handle.
-     * @param methods The {@link EventHandler} {@link Method}s to process the
-     *                      {@link Event}.
-     * @param forceHandle If <code>true</code>, the {@link Event} will be
-     *                    handled regardless of whether it has been cancelled
-     *                    or not (used for the {@link EventPriority#MONITOR}
-     *                    stage). Otherwise, if <code>false</code>, the handlers
-     *                    will respect the cancel status.
-     */
-    private void handleEvent(@NotNull final Event event, @NotNull final HashSet<Method> methods, final boolean forceHandle) {
         
-        for (final Method method : methods) {
-            
-            Logger logger = this.loggers.get(method);
-            if (logger == null) {
-                logger = Logger.getLogger(this.getClass().getSimpleName());
-                logger.log(Level.WARNING, "No Logger defined for EventHandler method.");
-                logger.log(Level.WARNING, "Default logger being used.");
-                logger.log(Level.WARNING, "EventHandler Class: " + method.getClass().getName());
-                logger.log(Level.WARNING, "Method Name: " + method.getName());
-            }
-            
-            if (!forceHandle && event instanceof Cancellable && ((Cancellable) event).isCancelled() && this.ignoreCancelled.get(method) != null && this.ignoreCancelled.get(method)) {
-                logger.log(Level.CONFIG, "Skipping as event is cancelled.");
-                logger.log(Level.CONFIG, "Event: " + event.getClass().getSimpleName());
-                logger.log(Level.CONFIG, "EventHandler Class: " + method.getClass().getName());
-                logger.log(Level.CONFIG, "Method Name: " + method.getName());
-                continue;
-            }
-            
-            try {
-                method.invoke(null, event);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NullPointerException | ExceptionInInitializerError e) {
-                logger.log(Level.WARNING, "Unable to invoke EventHandler method.");
-                logger.log(Level.WARNING, e.getClass().getSimpleName() + " thrown.", e);
-                logger.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
-                logger.log(Level.WARNING, "EventHandler Class: " + method.getClass().getName());
-                logger.log(Level.WARNING, "Method Name: " + method.getName());
+        boolean eventCancelled = false;
+        for (final Map.Entry<Integer, HashSet<Method>> entry : byPriority.entrySet()) {
+            for (final Method method : entry.getValue()) {
+        
+                Logger logger = this.loggers.get(method);
+                if (logger == null) {
+                    logger = PluginEvents.DEFAULT_LOGGER;
+                    logger.log(Level.WARNING, "No Logger defined for EventHandler method.");
+                    logger.log(Level.WARNING, "Default logger being used.");
+                    logger.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
+                    logger.log(Level.WARNING, "EventHandler Class: " + method.getClass().getName());
+                    logger.log(Level.WARNING, "Method Name: " + method.getName());
+                }
+        
+                if (eventCancelled && this.ignoreCancelled.get(method) != null && this.ignoreCancelled.get(method)) {
+                    logger.log(Level.CONFIG, "Skipping as event is cancelled.");
+                    logger.log(Level.CONFIG, "Event: " + event.getClass().getSimpleName());
+                    logger.log(Level.CONFIG, "EventHandler Class: " + method.getClass().getName());
+                    logger.log(Level.CONFIG, "Method Name: " + method.getName());
+                    continue;
+                }
+        
+                try {
+                    method.invoke(null, event);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NullPointerException | ExceptionInInitializerError e) {
+                    logger.log(Level.WARNING, "Unable to invoke EventHandler method.");
+                    logger.log(Level.WARNING, e.getClass().getSimpleName() + " thrown.", e);
+                    logger.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
+                    logger.log(Level.WARNING, "EventHandler Class: " + method.getClass().getName());
+                    logger.log(Level.WARNING, "Method Name: " + method.getName());
+                }
+                
+                if (entry.getKey() < EventPriority.MONITOR.ordinal()) {
+                    eventCancelled = event instanceof Cancellable && ((Cancellable) event).isCancelled();
+                }
             }
         }
+        
+        return eventCancelled;
     }
 }
