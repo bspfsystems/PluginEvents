@@ -34,6 +34,13 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This represents the main class where all {@link EventListener}s are
  * registered and all {@link Event}s are called.
+ * <p>
+ * It is highly recommended that when {@link PluginEvents#callEvent(Event)} is
+ * called in Bukkit or BungeeCord, it is called with the highest priority in the
+ * respective API's event handler (not recommended to use the MONITOR event
+ * priority in Bukkit). This is especially important if the {@link Event} is
+ * {@link Cancellable}, as this will allow the ability to properly cancel
+ * the event in the API.
  */
 public final class PluginEvents {
     
@@ -114,6 +121,11 @@ public final class PluginEvents {
     /**
      * Calls the specified {@link Event}, invoking all {@link EventHandler}s
      * registered to listen for the {@link Event}.
+     * <p>
+     * It is highly recommended that the call to this method is with the highest
+     * priority event handler in the Bukkit/BungeeCord API so that if the
+     * specified {@link Event} is {@link Cancellable}, the event in the
+     * respective API may be cancelled as well, if that is the intended action.
      * 
      * @param event The {@link Event} that is called.
      * @return <code>true</code> if the {@link Event} has been cancelled by the
