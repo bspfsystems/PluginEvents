@@ -1,5 +1,5 @@
 /*
- * This file is part of the MCPluginEvents library for
+ * This file is part of the PluginEvents library for
  * plugins that do not depend or do not want to depend
  * on the Bukkit API or BungeeCord API Events.
  *

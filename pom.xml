@@ -1,5 +1,5 @@
 <!--
-  ~ This file is part of the MCPluginEvents library for
+  ~ This file is part of the PluginEvents library for
   ~ plugins that do not depend or do not want to depend
   ~ on the Bukkit API or BungeeCord API Events.
   ~
@@ -23,24 +23,24 @@
 
     <groupId>org.bspfsystems</groupId>
     <artifactId>pluginevents</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
-    <name>MCPluginEvents</name>
+
+    <name>PluginEvents</name>
     <description>An EventHandler for subscribing to custom events for plugins that do not have dependencies on Bukkit or BungeeCord.</description>
-    <url>https://github.com/bspfsystems/MCPluginEvents/</url>
+    <url>https://github.com/bspfsystems/PluginEvents/</url>
     <organization>
         <name>BSPF Systems, LLC</name>
         <url>https://bspfsystems.org/</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>https://apache.org/licenses/LICENSE-2.0.html</url>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <name>Matt Ciolkosz</name>
@@ -49,18 +49,18 @@
             <organizationUrl>https://bspfsystems.org/</organizationUrl>
         </developer>
     </developers>
-    
+
     <scm>
-        <connection>scm:git:git@github.com:bspfsystems/MCPluginEvents.git</connection>
-        <developerConnection>scm:git:git@github.com:bspfsystems/MCPluginEvents.git</developerConnection>
-        <url>git@github.com:bspfsystems/MCPluginEvents.git</url>
+        <connection>scm:git:git@github.com:bspfsystems/PluginEvents.git</connection>
+        <developerConnection>scm:git:git@github.com:bspfsystems/PluginEvents.git</developerConnection>
+        <url>git@github.com:bspfsystems/PluginEvents.git</url>
     </scm>
-    
+
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/bspfsystems/MCPluginEvents/issues/</url>
+        <url>https://github.com/bspfsystems/PluginEvents/issues/</url>
     </issueManagement>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus</id>
@@ -71,7 +71,7 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-    
+
     <repositories>
         <repository>
             <id>oss-sonatype-releases</id>
@@ -82,7 +82,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -120,12 +120,12 @@
             </activation>
         </profile>
     </profiles>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -223,5 +223,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>
