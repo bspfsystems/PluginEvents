@@ -1,16 +1,16 @@
-/*
+/* 
  * This file is part of the PluginEvents library for
  * plugins that do not depend or do not want to depend
  * on the Bukkit API or BungeeCord API Events.
- *
- * Copyright 2021 BSPF Systems, LLC
- *
+ * 
+ * Copyright 2021-2022 BSPF Systems, LLC
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This represents the main class where all {@link EventListener}s are
- * registered and all {@link Event}s are called.
+ * registered and all {@link Event Events} are called.
  * <p>
  * It is highly recommended that when {@link PluginEvents#callEvent(Event)} is
  * called in Bukkit or BungeeCord, it is called with the highest priority in the
@@ -119,8 +119,9 @@ public final class PluginEvents {
     }
     
     /**
-     * Calls the specified {@link Event}, invoking all {@link EventHandler}s
-     * registered to listen for the {@link Event}.
+     * Calls the specified {@link Event}, invoking all
+     * {@link EventHandler EventHandlers} registered to listen for the
+     * {@link Event}.
      * <p>
      * It is highly recommended that the call to this method is with the highest
      * priority event handler in the Bukkit/BungeeCord API so that if the
@@ -128,8 +129,8 @@ public final class PluginEvents {
      * respective API may be cancelled as well, if that is the intended action.
      * 
      * @param event The {@link Event} that is called.
-     * @return <code>true</code> if the {@link Event} has been cancelled by the
-     *         end of the handling, <code>false</code> otherwise.
+     * @return {@code true} if the {@link Event} has been cancelled by the end
+     *         of the handling, {@code false} otherwise.
      */
     public boolean callEvent(@NotNull final Event event) {
         
