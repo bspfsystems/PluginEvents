@@ -32,20 +32,20 @@ import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This represents the main class where all {@link EventListener}s are
- * registered and all {@link Event Events} are called.
+ * This represents the main class where all {@link EventListener EventListeners}
+ * are registered and all {@link Event Events} are called.
  * <p>
- * It is highly recommended that when {@link PluginEvents#callEvent(Event)} is
+ * It is highly recommended that when {@link EventBus#callEvent(Event)} is
  * called in Bukkit or BungeeCord, it is called with the highest priority in the
  * respective API's event handler (not recommended to use the MONITOR event
  * priority in Bukkit). This is especially important if the {@link Event} is
  * {@link Cancellable}, as this will allow the ability to properly cancel
  * the event in the API.
  */
-public final class PluginEvents {
+public final class EventBus {
     
-    private static final PluginEvents INSTANCE = new PluginEvents();
-    private static final Logger DEFAULT_LOGGER = Logger.getLogger(PluginEvents.class.getSimpleName());
+    private static final EventBus INSTANCE = new EventBus();
+    private static final Logger DEFAULT_LOGGER = Logger.getLogger(EventBus.class.getSimpleName());
     
     private final ConcurrentHashMap<Event, TreeMap<Integer, HashSet<Method>>> registeredEvents;
     private final ConcurrentHashMap<Method, Boolean> ignoreCancelled;
@@ -54,20 +54,20 @@ public final class PluginEvents {
     /**
      * Private constructor to prevent instantiation.
      */
-    private PluginEvents() {
+    private EventBus() {
         this.registeredEvents = new ConcurrentHashMap<Event, TreeMap<Integer, HashSet<Method>>>();
         this.ignoreCancelled = new ConcurrentHashMap<Method, Boolean>();
         this.loggers = new ConcurrentHashMap<Method, Logger>();
     }
     
     /**
-     * Gets the instance of this {@link PluginEvents}.
+     * Gets the instance of this {@link EventBus}.
      * 
-     * @return The instance of this {@link PluginEvents}.
+     * @return The instance of this {@link EventBus}.
      */
     @NotNull
-    public static PluginEvents getInstance() {
-        return PluginEvents.INSTANCE;
+    public static EventBus getInstance() {
+        return EventBus.INSTANCE;
     }
     
     /**
@@ -79,7 +79,7 @@ public final class PluginEvents {
      *               messages (errors, warnings, debugging, etc).
      */
     public void registerListener(@NotNull final EventListener listener, @NotNull final Logger logger) {
-    
+        
         final HashSet<Method> methods = new HashSet<Method>(Arrays.asList(listener.getClass().getMethods()));
         methods.addAll(Arrays.asList(listener.getClass().getDeclaredMethods()));
         
@@ -136,25 +136,25 @@ public final class PluginEvents {
         
         final TreeMap<Integer, HashSet<Method>> byPriority = this.registeredEvents.get(event);
         if (byPriority == null) {
-            PluginEvents.DEFAULT_LOGGER.log(Level.WARNING, "Event called but not registered.");
-            PluginEvents.DEFAULT_LOGGER.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
+            EventBus.DEFAULT_LOGGER.log(Level.WARNING, "Event called but not registered.");
+            EventBus.DEFAULT_LOGGER.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
             return false;
         }
         
         boolean eventCancelled = false;
         for (final Map.Entry<Integer, HashSet<Method>> entry : byPriority.entrySet()) {
             for (final Method method : entry.getValue()) {
-        
+                
                 Logger logger = this.loggers.get(method);
                 if (logger == null) {
-                    logger = PluginEvents.DEFAULT_LOGGER;
+                    logger = EventBus.DEFAULT_LOGGER;
                     logger.log(Level.WARNING, "No Logger defined for EventHandler method.");
                     logger.log(Level.WARNING, "Default logger being used.");
                     logger.log(Level.WARNING, "Event: " + event.getClass().getSimpleName());
                     logger.log(Level.WARNING, "EventHandler Class: " + method.getClass().getName());
                     logger.log(Level.WARNING, "Method Name: " + method.getName());
                 }
-        
+                
                 if (eventCancelled && this.ignoreCancelled.get(method) != null && this.ignoreCancelled.get(method)) {
                     logger.log(Level.CONFIG, "Skipping as event is cancelled.");
                     logger.log(Level.CONFIG, "Event: " + event.getClass().getSimpleName());
@@ -162,7 +162,7 @@ public final class PluginEvents {
                     logger.log(Level.CONFIG, "Method Name: " + method.getName());
                     continue;
                 }
-        
+                
                 try {
                     method.invoke(null, event);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NullPointerException | ExceptionInInitializerError e) {

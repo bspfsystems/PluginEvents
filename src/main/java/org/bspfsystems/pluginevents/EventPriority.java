@@ -46,12 +46,54 @@ package org.bspfsystems.pluginevents;
  */
 public enum EventPriority {
     
+    /**
+     * The lowest priority. All other {@link EventHandler EventHandlers} will
+     * have a say in what happens with the {@link Event}.
+     */
     LOWEST,
+    
+    /**
+     * Very low priority. Most other {@link EventHandler EventHandlers} should
+     * be able to customize the outcome of the {@link Event}.
+     */
     LOWER,
+    
+    /**
+     * The {@link EventHandler} has a low importance on the outcome of the
+     * {@link Event}.
+     */
     LOW,
+    
+    /**
+     * The {@link EventHandler} has a normal importance on the outcome of the
+     * {@link Event}. This should be one of the most commonly-used
+     * {@link EventPriority EventPriorities}.
+     */
     NORMAL,
+    
+    /**
+     * The {@link EventHandler} has a high importance on the outcome of the
+     * {@link Event}.
+     */
     HIGH,
+    
+    /**
+     * Very high priority. Almost no other {@link EventHandler EventHandlers}
+     * should be able to change the outcome of the {@link Event}.
+     */
     HIGHER,
+    
+    /**
+     * The highest priority. No other {@link EventHandler EventHandlers} will
+     * have a say in what happens with the {@link Event}.
+     */
     HIGHEST,
+    
+    /**
+     * Used for monitoring when an {@link Event} is called. This can no longer
+     * cancel {@link Cancellable} {@link Event Events}, and should never modify
+     * the outcome of an {@link Event}. This should be one of the most
+     * commonly-used {@link EventPriority EventPriorities}.
+     */
     MONITOR;
 }
